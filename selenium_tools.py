@@ -9,7 +9,7 @@ class SeleniumWebInteraction:
         self.driver = webdriver.Chrome()
         self.driver.maximize_window()
 
-        self.drive = webdriver.Chrome(r'C:/scraper_dependencies/chromedriver.exe')
+        self.driver_path = webdriver.Chrome(r'C:/scraper_dependencies/chromedriver.exe')
 
     def scraper_directory(self):
         '''
