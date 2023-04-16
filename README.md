@@ -6,6 +6,8 @@ To use the screenshot tool, first create an instance of the Screenshot_Tool clas
 
 Here is an example:
 
+```python
 execute_screenshot_tool = Screenshot_Tool(url= '')
 execute_screenshot_tool.scroll_to_bottom()
 execute_screenshot_tool.full_page_screenshot()
+
