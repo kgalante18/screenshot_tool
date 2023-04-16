@@ -1,0 +1,76 @@
+from selenium_tool import SeleniumWebInteraction
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+from time import sleep
+import pandas as pd
+
+import os
+
+
+class Screenshot_Tool(SeleniumWebInteraction):
+    
+    def __init__(self, driver_path = None, url = None): 
+        super().__init__(driver_path)
+        
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.common.by import By
+        
+        self.chrome_options = Options()
+        self.chrome_options.add_argument('disable-infobars')
+        self.chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        self.chrome_options.add_experimental_option('useAutomationExtension', False)
+        self.chrome_options.add_argument("window-size=1200,3000")
+        self.chrome_options.headless = True # If you want to operate headless.
+        self.URL = url
+
+        self.access_site()
+        
+        self.user = os.getlogin()
+        
+    def access_site(self):
+
+        self.launch_browser(self.chrome_options)
+        self.navigate_to_url(self.URL)
+        self.scraper_directory()
+             
+
+    def scroll_to_bottom(self): 
+        
+        '''
+        Scrolls to the bottom of the page.
+        '''
+
+        while True:
+            #find current scroll height
+            self.last_height = self.driver.execute_script("return document.body.scrollHeight")
+            # Scroll down to bottom based on current scroll height 
+            self.driver.execute_script(f"window.scrollTo(0, {self.last_height});")
+            # Wait to load, see if page gets longer
+            sleep(3)
+
+            # Calculate scroll height after scrolling, and compare this with last scroll height
+            self.new_height = self.driver.execute_script("return document.body.scrollHeight")
+            
+            # Compare scroll heights.
+            # If they are the same, then break, as this means we have reached the end of the page
+            # Otherwise, it will run again to scroll futher. 
+            if self.new_height == self.last_height:
+                break
+        
+        
+    def full_page_screenshot(self):
+        
+        '''
+        Upon scrolling to the bottom of the page, this tool dynamically adjusts 
+        the window size to match the full page length before capturing a screenshot of the entire webpage
+        '''
+            
+        self.total_page_height = self.new_height + 150 #buffer to make sure we reach the end of the page
+        self.driver.set_window_size(1200,self.total_page_height)
+        
+        self.image = self.driver.find_element(By.TAG_NAME, 'body')
+        self.image.screenshot(f'./screenshot/screenshot.png')
+        
+        self.close()
